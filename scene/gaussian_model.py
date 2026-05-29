@@ -18,7 +18,6 @@ from functools import reduce
 from utils.system_utils import mkdir_p
 from plyfile import PlyData, PlyElement
 from utils.sh_utils import RGB2SH
-from simple_knn._C import distCUDA2
 from utils.graphics_utils import BasicPointCloud
 from utils.general_utils import strip_symmetric, build_scaling_rotation
 
@@ -429,6 +428,10 @@ class GaussianModel:
         return points
 
     def create_from_pcd(self, pcd : BasicPointCloud, spatial_lr_scale : float):
+        # Lazy-import the CUDA simple_knn extension so the module is usable
+        # when only loading trained PLYs (which don't need distCUDA2).
+        from simple_knn._C import distCUDA2
+
         self.spatial_lr_scale = spatial_lr_scale
         points = pcd.points
 
